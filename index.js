@@ -60,7 +60,7 @@ const handlers = {
 				//console.log("received : " + myResult);
 
 		var vacationText = '<speak>Sweet You are Going to ' + vacation.cityName + '<break time="3s" /> the Price is ' + vacation.price + 'And awesome places you get to visit are <break time="3s" />' + vacation.POIList[0] + '<break time="3s" />' + vacation.POIList[1] + '<break time="3s" />' +vacation.POIList[2] +'</speak>';
-		
+
 				this.emit(':tell',  vacationText);
 
 			}
@@ -139,57 +139,55 @@ function getAirportCode(origin, callback) {
 				airportCode = returnData;
 			  }
 
-			  request(apiTopDestinationsLink, function (error, response, body) {
-	body = JSON.parse(body);
+			request(apiTopDestinationsLink, function (error, response, body) {
+				body = JSON.parse(body);
 
-	var randomNumber = Math.floor(Math.random() * 9) + 1;
-	var selectedCity = body.results[randomNumber].destination;
-	var price = body.results[randomNumber].price;
+				var randomNumber = Math.floor(Math.random() * 9) + 1;
+				var selectedCity = body.results[randomNumber].destination;
+				var price = body.results[randomNumber].price;
 
-  var apiLocationLink = apiLocation + selectedCity + '?apikey=' + apiKey;
+  				var apiLocationLink = apiLocation + selectedCity + '?apikey=' + apiKey;
 
-   // Print the response status code if a response was received 
+	   			// Print the response status code if a response was received 
 
-   request(apiLocationLink, function(error, response, body) {
-   		body = JSON.parse(body);
-   		var cityName = body.city.name;
-   		var latitue = body.city.location.latitude;
-   		var longitude = body.city.location.longitude;
+			   request(apiLocationLink, function(error, response, body) {
+			   		body = JSON.parse(body);
+			   		var cityName = body.city.name;
+			   		var latitue = body.city.location.latitude;
+			   		var longitude = body.city.location.longitude;
 
-   		var POILink = 'https://api.sandbox.amadeus.com/v1.2/points-of-interest/yapq-search-circle' + '?apikey=' + apiKey + '&latitude=' + latitue + '&longitude=' + longitude + '&radius=42';
+			   		var POILink = 'https://api.sandbox.amadeus.com/v1.2/points-of-interest/yapq-search-circle' + '?apikey=' + apiKey + '&latitude=' + latitue + '&longitude=' + longitude + '&radius=42';
 
-   		console.log(POILink);
-
-
-   		request(POILink, function(error, response, body) {
-   			//console.log(body);
-
-   			body = JSON.parse(body);
-   			var POIList = []
-
-   			for(var i=0; i < 3; i++) {
-   				POIList.push(body.points_of_interest[i].title);
-   			} 
-
-   			var vacation = {
-   				'cityName': cityName,
-   				'price': price,
-   				'POIList': POIList
-
-   			}
-
-   			 callback(vacation);
-		   		
-		   });
-		});
+			   		console.log(POILink);
 
 
+			   		request(POILink, function(error, response, body) {
+			   			//console.log(body);
 
-             // this will execute whatever function the caller defined, with one argument
+			   			body = JSON.parse(body);
+			   			var POIList = []
 
-        });
+			   			for(var i=0; i < 3; i++) {
+			   				POIList.push(body.points_of_interest[i].title);
+			   			} 
 
-    });
+			   			var vacation = {
+			   				'cityName': cityName,
+			   				'price': price,
+			   				'POIList': POIList
+
+			   			}
+
+			   			 callback(vacation);
+					   		
+					   });
+					});
+
+	             // this will execute whatever function the caller defined, with one argument
+	             	});
+	        	});
+
+    		});
     req.end();
 
 }
