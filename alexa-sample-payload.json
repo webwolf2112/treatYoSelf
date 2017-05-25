@@ -1,0 +1,37 @@
+{
+  "session": {
+    "sessionId": "SessionId.e4abf8dd-11d5-4aa2-987f-b84c455494e3",
+    "application": {
+      "applicationId": "amzn1.ask.skill.eb525414-8c76-4707-bd47-0ae57ef80589"
+    },
+    "attributes": {},
+    "user": {
+      "userId": "amzn1.ask.account.AH4V576U66NRV2VF7EG7CFN6VUC3JZBJBAHEL5BBUWTVP6ZEHZ5VPZZBIAD3WORA5QL27IHH2PI5GBTWWPDO5K3CZGCGTSCPOJZFQKLFAJWIG3IAPEOWR5QQWBGTAC5VOZRTPQ5XMBXAZLJSSED5N3ZF4UED7WRN3LPFVTXLOLDRXK43IBE3YRLKMOH4YNAOEXPIUKDKCQUPLOQ"
+    },
+    "new": true
+  },
+  "request": {
+    "type": "IntentRequest",
+    "requestId": "EdwRequestId.9ed50242-5796-4d22-87e9-4b293e5ab3e9",
+    "locale": "en-US",
+    "timestamp": "2017-05-25T03:31:51Z",
+    "intent": {
+      "name": "PlanVacation",
+      "slots": {
+        "origin": {
+          "name": "origin",
+		  "value": "Denver"
+        },
+        "how_long": {
+          "name": "how_long",
+		  "value": "P3D"
+        },
+        "when": {
+          "name": "when",
+		  "value": "april"
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}
