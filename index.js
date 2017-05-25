@@ -50,6 +50,8 @@ const handlers = {
         this.emit('PlanVacation');
     },
     'PlanVacation': function () {
+
+    	var rw = require('./max_reward.js');
 		
         var origin = this.event.request.intent.slots.origin.value;
 		var when = this.event.request.intent.slots.when.value; //will be a string of a month, like "april"
@@ -57,9 +59,11 @@ const handlers = {
 		
 		getAirportCode(origin,  (vacation) => {
 				//console.log("sent     : " + myRequest);
-				//console.log("received : " + myResult);
+				//console.log("received : " + myResult);]
 
-		var vacationText = 'Sweet You are Going to ' + vacation.cityName + '<break time="3s" /> the Price is ' + vacation.price + 'And awesome places you get to visit are <break time="3s" />' + vacation.POIList[0] + '<break time="3s" />' + vacation.POIList[1] + '<break time="3s" />' + vacation.POIList[2] + '<break time="3s" />You go with your bad self <break time="3s" /> <audio src="https://s3.amazonaws.com/treat-yo-self/treat.mp3"/>';
+		var balance = rw.getMaxTravelReward(rw.rewardJson);
+
+		var vacationText = 'Sweet You are Going to ' + vacation.cityName + '<break time="3s" /> the Price is ' + vacation.price + 'And awesome places you get to visit are <break time="3s" />' + vacation.POIList[0] + '<break time="3s" />' + vacation.POIList[1] + '<break time="3s" />' + vacation.POIList[2] + '<break time="3s" />You go with your bad self <break time="3s" /> <audio src="https://s3.amazonaws.com/treat-yo-self/treat.mp3"/>' + 'you have ' + balance + 'in your rewards';
 
 				this.emit(':tell',  vacationText);
 
@@ -158,8 +162,6 @@ function getAirportCode(origin, callback) {
 			   		var longitude = body.city.location.longitude;
 
 			   		var POILink = 'https://api.sandbox.amadeus.com/v1.2/points-of-interest/yapq-search-circle' + '?apikey=' + apiKey + '&latitude=' + latitue + '&longitude=' + longitude + '&radius=42';
-
-			   		console.log(POILink);
 
 
 			   		request(POILink, function(error, response, body) {
