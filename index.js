@@ -89,13 +89,13 @@ const handlers = {
 				//console.log("received : " + myResult);]
 
 		var balance = rw.getMaxTravelReward(rw.rewardJson);
-		var balanceMessage = 'you have ' + Math.floor(balance) + ' dollars in your Capital Rewards account! Your Freaking going to ';
+		var balanceMessage = 'you have ' + Math.floor(balance) + ' dollars in your Capital Rewards account! ';
 
 		if (parseInt(Math.floor(balance)) <= parseInt(Math.floor(vacation.price))) {
 			balanceMessage = 'You don\'t have enough in your Capital One Rewards, you only have ' + Math.floor(balance) + ' dollars but if you get a new Capital One Credit Card and ';
 		}
 
-		var vacationText = balanceMessage +'You can go to ' + vacation.cityName + '<break time=".5s" /> the Price is ' + Math.floor(vacation.price) + ' dollars And awesome places you get to visit are <break time="0.5s" />' + vacation.POIList[0] + '<break time="0.5s" />' + vacation.POIList[1] + '<break time=".5s" />' + vacation.POIList[2] + '<break time=".5s" />You go with your bad self <break time=".5s" /> <audio src="https://s3.amazonaws.com/treat-yo-self/treat.mp3"/>';
+		var vacationText = balanceMessage +'Your freaking going to ' + vacation.cityName + '<break time=".5s" /> the Price is ' + Math.floor(vacation.price) + ' dollars And awesome places you get to visit are <break time="0.5s" />' + vacation.POIList[0] + '<break time="0.5s" />' + vacation.POIList[1] + '<break time=".5s" />' + vacation.POIList[2] + '<break time=".5s" />You go with your bad self <break time=".5s" /> <audio src="https://s3.amazonaws.com/treat-yo-self/treat.mp3"/>';
 
 				this.emit(':tell',  vacationText);
 
