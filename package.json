@@ -1,0 +1,22 @@
+{
+  "name": "treatyoself",
+  "version": "1.0.0",
+  "description": "Alexa app to plan a trip based on your rewards",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webwolf2112/treatYoSelf.git"
+  },
+  "author": "Hackathon Team 5",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/webwolf2112/treatYoSelf/issues"
+  },
+  "homepage": "https://github.com/webwolf2112/treatYoSelf#readme",
+  "dependencies": {
+    "request": "^2.81.0"
+  }
+}
