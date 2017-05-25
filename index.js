@@ -183,9 +183,6 @@ function getAirportCode(origin, callback) {
 		   		
 		   });
 		});
-
-
-
              // this will execute whatever function the caller defined, with one argument
 
         });
