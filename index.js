@@ -50,20 +50,40 @@ const handlers = {
     },
     'PlanVacation': function () {
 		
-        // Get a random space fact from the space facts list
-        // Use this.t() to get corresponding language data
-        //const factArr = this.t('FACTS');
-        //const factIndex = Math.floor(Math.random() * factArr.length);
-        //const randomFact = factArr[factIndex];
-
-        // Create speech output
-        //const speechOutput = this.t('GET_FACT_MESSAGE') + randomFact;
-		//const speechOutput = 
-        //this.emit(':tellWithCard', speechOutput, this.t('SKILL_NAME'), randomFact);
+		var http = require('http');
 		
-		this.emit(':tell', 'Origin ' + this.event.request.intent.slots.origin.value + 
-							'When ' + this.event.request.intent.slots.when.value +
-							'How Long ' + this.event.request.intent.slots.how_long.value);
+        var origin = this.event.request.intent.slots.origin.value;
+		var when = this.event.request.intent.slots.when.value; //will be a string of a month, like "april"
+		var howLong = this.event.request.intent.slots.how_long.value; //will be an AMAZON.Duration string (https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/built-in-intent-ref/slot-type-reference#duration) -- "P3D" means three days
+		
+		//get airport code
+		var options = {
+		  host: 'prismtechstudios.com',
+		  port: 80,
+		  path: '/test/airports/get-airport.php?city=' + escape(cityName)
+		};
+
+		http.get(options, function(res) {
+			
+			res.setEncoding('utf8');
+			res.on('data', function (body) {
+			  var airportCode = '';
+			  if (body == 'not found') {
+				//just use"Denver" as fallback
+				airportCode = 'DEN';
+				//console.log ('error: airport code not found');
+			  } else {
+				airportCode = body;
+			  }
+			  var speechOutput = 'This is what Alexa will say. Airport code is ' + airportCode + ' (from origin: ' + origin;
+		
+			  this.emit(':tell', speechOutput);
+			});
+		  
+		}).on('error', function(e) {
+		  console.log("Got error: " + e.message);
+		});
+		
     },
     'AMAZON.HelpIntent': function () {
         const speechOutput = this.t('HELP_MESSAGE');
