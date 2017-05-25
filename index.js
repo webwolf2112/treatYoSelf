@@ -50,6 +50,33 @@ const handlers = {
         this.emit('PlanVacation');
     },
     'PlanVacation': function () {
+		
+		//if (this.event.request.dialogState === 'STARTED') {
+          //  var updatedIntent = this.event.request.intent;
+            // Pre-fill slots: update the intent object with slot values for which 
+            // you have defaults, then emit :delegate with this updated intent. 
+            //updatedIntent.slots.SlotName.value = 'DefaultValue';
+            //this.emit(':delegate', updatedIntent);
+			//return;
+        //} else if (this.event.request.dialogState !== 'COMPLETED'){
+         //   this.emit(':delegate');
+			//return;
+        //}
+		
+		        if (this.event.request.dialogState == "STARTED" || this.event.request.dialogState == "IN_PROGRESS"){
+            this.context.succeed({
+                "response": {
+                    "directives": [
+                        {
+                            "type": "Dialog.Delegate"
+                        }
+                    ],
+                    "shouldEndSession": false
+                },
+                "sessionAttributes": {}
+            });
+			return;
+        }
 
     	var rw = require('./max_reward.js');
 		
@@ -64,11 +91,11 @@ const handlers = {
 		var balance = rw.getMaxTravelReward(rw.rewardJson);
 		var balanceMessage = 'you have $' + balance + ' in your Capital Rewards account! Your Freaking going to';
 
-		if (parseInt(Math.floor(balance)) >= parseInt(Math.floor(vacation.price))) {
-			balanceMessage = 'You don\'t have enough in your Captial One Rewards but if you get a new Capital One Credit Card and ';
+		if (parseInt(Math.floor(balance)) <= parseInt(Math.floor(vacation.price))) {
+			balanceMessage = 'You don\'t have enough in your Capital One Rewards, you only have ' + Math.floor(balance) + ' dollars but if you get a new Capital One Credit Card and ';
 		}
 
-		var vacationText = balanceMessage +'You can go to ' + vacation.cityName + '<break time=".5s" /> the Price is $' + vacation.price + 'And awesome places you get to visit are <break time="3s" />' + vacation.POIList[0] + '<break time="1s" />' + vacation.POIList[1] + '<break time=".5s" />' + vacation.POIList[2] + '<break time=".5s" />You go with your bad self <break time=".5s" /> <audio src="https://s3.amazonaws.com/treat-yo-self/treat.mp3"/>';
+		var vacationText = balanceMessage +'You can go to ' + vacation.cityName + '<break time=".5s" /> the Price is ' + Math.floor(vacation.price) + ' dollars And awesome places you get to visit are <break time="0.5s" />' + vacation.POIList[0] + '<break time="0.5s" />' + vacation.POIList[1] + '<break time=".5s" />' + vacation.POIList[2] + '<break time=".5s" />You go with your bad self <break time=".5s" /> <audio src="https://s3.amazonaws.com/treat-yo-self/treat.mp3"/>';
 
 				this.emit(':tell',  vacationText);
 
