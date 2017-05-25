@@ -64,7 +64,7 @@ const handlers = {
 		var balance = rw.getMaxTravelReward(rw.rewardJson);
 		var balanceMessage = 'you have $' + balance + ' in your Capital Rewards account! Your Freaking going to';
 
-		if (paseInt(Math.floor(balance)) >= parseInt(Math.floor(vacation.price)) {
+		if (paseInt(Math.floor(balance)) >= parseInt(Math.floor(vacation.price))) {
 			balanceMessage = 'You don\'t have enough in your Captial One Rewards but if you get a new Capital One Credit Card and';
 		}
 
