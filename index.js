@@ -7,15 +7,11 @@
  * The Intent Schema, Custom Slots and Sample Utterances for this skill, as well
  * as testing instructions are located at https://github.com/alexa/skill-sample-nodejs-fact
  **/
+
 'use strict';
 
 const Alexa = require('alexa-sdk');
-var request = require('request'),
-apiKey = '6IxB1I1Mzv8PDq5WcbAEL2y8boERbGZz',
-apiTopDestinations = 'https://api.sandbox.amadeus.com/v1.2/flights/inspiration-search',
-apiLocation = 'https://api.sandbox.amadeus.com/v1.2/location/',
-airportCode = 'BOS',
-apiTopDestinationsLink = apiTopDestinations + '?origin=' + airportCode + '&apikey=' + apiKey;
+
 
 const APP_ID = undefined;  // TODO replace with your app ID (OPTIONAL).
 
@@ -55,39 +51,22 @@ const handlers = {
     },
     'PlanVacation': function () {
 		
-		var http = require('http');
-		
         var origin = this.event.request.intent.slots.origin.value;
 		var when = this.event.request.intent.slots.when.value; //will be a string of a month, like "april"
 		var howLong = this.event.request.intent.slots.how_long.value; //will be an AMAZON.Duration string (https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/built-in-intent-ref/slot-type-reference#duration) -- "P3D" means three days
 		
-		//get airport code
-		var options = {
-		  host: 'prismtechstudios.com',
-		  port: 80,
-		  path: '/test/airports/get-airport.php?city=' + escape(cityName)
-		};
+		getAirportCode(origin,  (vacation) => {
+				//console.log("sent     : " + myRequest);
+				//console.log("received : " + myResult);
 
-		http.get(options, function(res) {
-			
-			res.setEncoding('utf8');
-			res.on('data', function (body) {
-			  var airportCode = '';
-			  if (body == 'not found') {
-				//just use"Denver" as fallback
-				airportCode = 'DEN';
-				//console.log ('error: airport code not found');
-			  } else {
-				airportCode = body;
-			  }
-			  var speechOutput = 'This is what Alexa will say. Airport code is ' + airportCode + ' (from origin: ' + origin;
+				var vacationText = '<speak>Sweet You are Going to ' + vacation.cityName + '<break time="3s" /> the Price is ' + vacation.price + 'And awesome places you get to visit are <break time="3s" />' + vacation.POIList[0] + '<break time="3s" />' + vacation.POIList[1] + '<break time="3s" />' +vacation.POIList[2] +'</speak>';
+		   		});
+
+				this.emit(':tell',  vacationText);
+
+			}
+		);
 		
-			  this.emit(':tell', speechOutput);
-			});
-		  
-		}).on('error', function(e) {
-		  console.log("Got error: " + e.message);
-		});
 		
     },
     'AMAZON.HelpIntent': function () {
@@ -113,3 +92,105 @@ let index = function index(event, context, callback) {
 };
 
 exports.handler = index;
+
+var http = require('http');
+// https is a default part of Node.JS.  Read the developer doc:  https://nodejs.org/api/https.html
+// try other APIs such as the current bitcoin price : https://btc-e.com/api/2/btc_usd/ticker  returns ticker.last
+
+function getAirportCode(origin, callback) {
+
+    // GET is a web service request that is fully defined by a URL string
+    // Try GET in your browser:
+    // https://cp6gckjt97.execute-api.us-east-1.amazonaws.com/prod/stateresource?usstate=New%20Jersey
+
+
+    // Update these options with the details of the web service you would like to call
+    //get airport code
+	var options = {
+	  host: 'prismtechstudios.com',
+	  port: 80,
+	  path: '/test/airports/get-airport.php?city=' + escape(origin)
+	};
+	var request = require('request'),
+		apiKey = '6IxB1I1Mzv8PDq5WcbAEL2y8boERbGZz',
+		apiTopDestinations = 'https://api.sandbox.amadeus.com/v1.2/flights/inspiration-search',
+		apiLocation = 'https://api.sandbox.amadeus.com/v1.2/location/',
+		apiTopDestinationsLink = apiTopDestinations + '?origin=' + airportCode + '&apikey=' + apiKey;
+
+    var req = http.request(options, res => {
+        res.setEncoding('utf8');
+        var returnData = "";
+
+        res.on('data', chunk => {
+            returnData = returnData + chunk;
+        });
+
+        res.on('end', () => {
+            // we have now received the raw return data in the returnData variable.
+            // We can see it in the log output via:
+            // console.log(JSON.stringify(returnData))
+            // we may need to parse through it to extract the needed data
+
+            var airportCode = '';
+			  if (returnData == 'not found') {
+				//just use"Denver" as fallback
+				airportCode = 'DEN';
+				//console.log ('error: airport code not found');
+			  } else {
+				airportCode = returnData;
+			  }
+
+			  request(apiTopDestinationsLink, function (error, response, body) {
+	body = JSON.parse(body);
+
+	var randomNumber = Math.floor(Math.random() * 9) + 1;
+	var selectedCity = body.results[randomNumber].destination;
+	var price = body.results[randomNumber].price;
+
+  var apiLocationLink = apiLocation + selectedCity + '?apikey=' + apiKey;
+
+   // Print the response status code if a response was received 
+
+   request(apiLocationLink, function(error, response, body) {
+   		body = JSON.parse(body);
+   		var cityName = body.city.name;
+   		var latitue = body.city.location.latitude;
+   		var longitude = body.city.location.longitude;
+
+   		var POILink = 'https://api.sandbox.amadeus.com/v1.2/points-of-interest/yapq-search-circle' + '?apikey=' + apiKey + '&latitude=' + latitue + '&longitude=' + longitude + '&radius=42';
+
+   		console.log(POILink);
+
+
+   		request(POILink, function(error, response, body) {
+   			//console.log(body);
+
+   			body = JSON.parse(body);
+   			var POIList = []
+
+   			for(var i=0; i < 3; i++) {
+   				POIList.push(body.points_of_interest[i].title);
+   			} 
+
+   			var vacation = {
+   				'cityName': cityName,
+   				'price': price,
+   				'POIList': POIList
+
+   			}
+
+   			 callback(vacation);
+		   		
+		   });
+		});
+
+
+
+             // this will execute whatever function the caller defined, with one argument
+
+        });
+
+    });
+    req.end();
+
+}
