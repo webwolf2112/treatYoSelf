@@ -14,7 +14,9 @@ http.get(options, function(res) {
 	res.setEncoding('utf8');
 	res.on('data', function (body) {
 	  if (body == 'not found') {
-	    console.log ('error: airport code not found');
+		//just say "Denver" as fallback
+		console.log('DEN');
+	    //console.log ('error: airport code not found');
       } else {
 	    console.log (body);
       }
