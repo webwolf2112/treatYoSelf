@@ -65,7 +65,7 @@ const handlers = {
 		var balanceMessage = 'you have $' + balance + ' in your Capital Rewards account! Your Freaking going to';
 
 		if (parseInt(Math.floor(balance)) >= parseInt(Math.floor(vacation.price))) {
-			balanceMessage = 'You don\'t have enough in your Captial One Rewards but if you get a new Capital One Credit Card and';
+			balanceMessage = 'You don\'t have enough in your Captial One Rewards but if you get a new Capital One Credit Card and ';
 		}
 
 		var vacationText = balanceMessage +'You can go to ' + vacation.cityName + '<break time=".5s" /> the Price is $' + vacation.price + 'And awesome places you get to visit are <break time="3s" />' + vacation.POIList[0] + '<break time="1s" />' + vacation.POIList[1] + '<break time=".5s" />' + vacation.POIList[2] + '<break time=".5s" />You go with your bad self <break time=".5s" /> <audio src="https://s3.amazonaws.com/treat-yo-self/treat.mp3"/>';
