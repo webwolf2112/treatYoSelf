@@ -44,7 +44,7 @@ const languageStrings = {
 
 const handlers = {
     'LaunchRequest': function () {
-        this.emit('PlanVacation');
+        this.emit(':ask',  "Want to treat yo self? Can I get a hell yeah?");
     },
     'PlanVacationIntent': function () {
         this.emit('PlanVacation');
