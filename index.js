@@ -110,11 +110,7 @@ function getAirportCode(origin, callback) {
 	  port: 80,
 	  path: '/test/airports/get-airport.php?city=' + escape(origin)
 	};
-	var request = require('request'),
-		apiKey = '6IxB1I1Mzv8PDq5WcbAEL2y8boERbGZz',
-		apiTopDestinations = 'https://api.sandbox.amadeus.com/v1.2/flights/inspiration-search',
-		apiLocation = 'https://api.sandbox.amadeus.com/v1.2/location/',
-		apiTopDestinationsLink = apiTopDestinations + '?origin=' + airportCode + '&apikey=' + apiKey;
+	var request = require('request');
 
     var req = http.request(options, res => {
         res.setEncoding('utf8');
@@ -138,6 +134,11 @@ function getAirportCode(origin, callback) {
 			  } else {
 				airportCode = returnData;
 			  }
+
+			  var apiKey = '6IxB1I1Mzv8PDq5WcbAEL2y8boERbGZz',
+				apiTopDestinations = 'https://api.sandbox.amadeus.com/v1.2/flights/inspiration-search',
+				apiLocation = 'https://api.sandbox.amadeus.com/v1.2/location/',
+				apiTopDestinationsLink = apiTopDestinations + '?origin=' + airportCode + '&apikey=' + apiKey;
 
 			request(apiTopDestinationsLink, function (error, response, body) {
 				body = JSON.parse(body);
