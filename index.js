@@ -44,22 +44,28 @@ const languageStrings = {
 
 const handlers = {
     'LaunchRequest': function () {
-        this.emit('PlanVacation');
+        this.emit(':ask',  "Want to treat yo self? Can I get a hell yeah?");
     },
     'PlanVacationIntent': function () {
         this.emit('PlanVacation');
     },
     'PlanVacation': function () {
+
+    	var rw = require('./max_reward.js');
 		
         var origin = this.event.request.intent.slots.origin.value;
 		var when = this.event.request.intent.slots.when.value; //will be a string of a month, like "april"
 		var howLong = this.event.request.intent.slots.how_long.value; //will be an AMAZON.Duration string (https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/built-in-intent-ref/slot-type-reference#duration) -- "P3D" means three days
 		
-		getAirportCode(origin,  (airportCode) => {
+		getAirportCode(origin,  (vacation) => {
 				//console.log("sent     : " + myRequest);
-				//console.log("received : " + myResult);
+				//console.log("received : " + myResult);]
 
-				this.emit(':tell', 'Test ' + airportCode );
+		var balance = rw.getMaxTravelReward(rw.rewardJson);
+
+		var vacationText = 'Sweet You are Going to ' + vacation.cityName + '<break time="3s" /> the Price is ' + vacation.price + 'And awesome places you get to visit are <break time="3s" />' + vacation.POIList[0] + '<break time="3s" />' + vacation.POIList[1] + '<break time="3s" />' + vacation.POIList[2] + '<break time="3s" />You go with your bad self <break time="3s" /> <audio src="https://s3.amazonaws.com/treat-yo-self/treat.mp3"/>' + 'you have ' + balance + 'in your rewards';
+
+				this.emit(':tell',  vacationText);
 
 			}
 		);
@@ -108,6 +114,7 @@ function getAirportCode(origin, callback) {
 	  port: 80,
 	  path: '/test/airports/get-airport.php?city=' + escape(origin)
 	};
+	var request = require('request');
 
     var req = http.request(options, res => {
         res.setEncoding('utf8');
@@ -132,11 +139,58 @@ function getAirportCode(origin, callback) {
 				airportCode = returnData;
 			  }
 
-            callback(airportCode);  // this will execute whatever function the caller defined, with one argument
+			  var apiKey = '6IxB1I1Mzv8PDq5WcbAEL2y8boERbGZz',
+				apiTopDestinations = 'https://api.sandbox.amadeus.com/v1.2/flights/inspiration-search',
+				apiLocation = 'https://api.sandbox.amadeus.com/v1.2/location/',
+				apiTopDestinationsLink = apiTopDestinations + '?origin=' + airportCode + '&apikey=' + apiKey;
 
-        });
+			request(apiTopDestinationsLink, function (error, response, body) {
+				body = JSON.parse(body);
 
-    });
+				var randomNumber = Math.floor(Math.random() * 9) + 1;
+				var selectedCity = body.results[randomNumber].destination;
+				var price = body.results[randomNumber].price;
+
+  				var apiLocationLink = apiLocation + selectedCity + '?apikey=' + apiKey;
+
+	   			// Print the response status code if a response was received 
+
+			   request(apiLocationLink, function(error, response, body) {
+			   		body = JSON.parse(body);
+			   		var cityName = body.city.name;
+			   		var latitue = body.city.location.latitude;
+			   		var longitude = body.city.location.longitude;
+
+			   		var POILink = 'https://api.sandbox.amadeus.com/v1.2/points-of-interest/yapq-search-circle' + '?apikey=' + apiKey + '&latitude=' + latitue + '&longitude=' + longitude + '&radius=42';
+
+
+			   		request(POILink, function(error, response, body) {
+			   			//console.log(body);
+
+			   			body = JSON.parse(body);
+			   			var POIList = []
+
+			   			for(var i=0; i < 3; i++) {
+			   				POIList.push(body.points_of_interest[i].title);
+			   			} 
+
+			   			var vacation = {
+			   				'cityName': cityName,
+			   				'price': price,
+			   				'POIList': POIList
+
+			   			}
+
+			   			 callback(vacation);
+					   		
+					   });
+					});
+
+	             // this will execute whatever function the caller defined, with one argument
+	             	});
+	        	});
+
+    		});
     req.end();
 
 }
