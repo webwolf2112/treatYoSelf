@@ -59,9 +59,8 @@ const handlers = {
 				//console.log("sent     : " + myRequest);
 				//console.log("received : " + myResult);
 
-				var vacationText = '<speak>Sweet You are Going to ' + vacation.cityName + '<break time="3s" /> the Price is ' + vacation.price + 'And awesome places you get to visit are <break time="3s" />' + vacation.POIList[0] + '<break time="3s" />' + vacation.POIList[1] + '<break time="3s" />' +vacation.POIList[2] +'</speak>';
-		   		});
-
+		var vacationText = '<speak>Sweet You are Going to ' + vacation.cityName + '<break time="3s" /> the Price is ' + vacation.price + 'And awesome places you get to visit are <break time="3s" />' + vacation.POIList[0] + '<break time="3s" />' + vacation.POIList[1] + '<break time="3s" />' +vacation.POIList[2] +'</speak>';
+		
 				this.emit(':tell',  vacationText);
 
 			}
@@ -183,6 +182,9 @@ function getAirportCode(origin, callback) {
 		   		
 		   });
 		});
+
+
+
              // this will execute whatever function the caller defined, with one argument
 
         });
